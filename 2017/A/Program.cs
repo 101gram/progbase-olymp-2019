@@ -7,9 +7,7 @@ namespace A {
     class Program {
         static void Main(string[] args) {
             var memBefore = GC.GetTotalMemory(false);
-            Console.WriteLine(getMinSteps(readInputSeq(
-                "input.txt"
-            )));
+            Console.WriteLine(getMinSteps(readInputSeq("input.txt")));
             Console.WriteLine($"Used {GC.GetTotalMemory(false) - memBefore} bytes");
         }
 

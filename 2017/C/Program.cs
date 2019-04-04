@@ -1,11 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace C {
     class Program {
         static readonly float G = 9.81f;
 
         static void Main(string[] args) {
-            float[] result = getHeightsToShoot(1, new float[] {2, 1, 1.41f});
+            var result = getHeightsToShoot(1, new[] {2, 1, 1.41f});
             foreach(var item in result) {
                 Console.WriteLine(item.ToString());
             }
@@ -13,7 +14,7 @@ namespace C {
         
         static float[] getHeightsToShoot(float velocity, float[] distances) {
             Array.Sort(distances);
-            float[] heights = new float[distances.Length];
+            var heights = new float[distances.Length];
             for (short i = 0; i < heights.Length; i++) {
                 heights[i] = calculateHeight(velocity, distances[i]);
             }

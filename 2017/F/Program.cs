@@ -65,6 +65,7 @@ namespace F {
                         if (newRow >= currentRowValue) {
                             currentRowValue = newRow;
                             y--;
+                            continue;
                         }
                     } else if (x == 0) {
                         return int.MinValue;

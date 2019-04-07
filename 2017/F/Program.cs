@@ -37,12 +37,13 @@ namespace F {
                         if (newRow >= currentRowValue) {
                             currentRowValue = newRow;
                             y++;
+                            continue;
                         }
                     } else if (x == width - 1) {
                         return int.MinValue;
                     }
                 }
-                if (x + 1 < width && IsAvaliable(map[x + 1, y])) {
+                if (x + 1 < width && IsAvaliableCell((x + 1, y), map)) {
                    x++;
                 } 
             }
@@ -69,7 +70,7 @@ namespace F {
                         return int.MinValue;
                     }
                 }
-                if (x - 1 >= 0 && IsAvaliable(map[x - 1, y])) {
+                if (x - 1 >= 0 && IsAvaliableCell((x - 1, y), map)) {
                    x--;
                 } 
             }
@@ -83,6 +84,10 @@ namespace F {
         public static bool IsAvaliable(short place) => place != -1;
 
         public static bool IsTarget(short place) => place == 1;
+
+        public static bool IsAvaliableCell((int x, int y) cell, short[,] map) {
+            return IsAvaliable(map[cell.x, cell.y]);
+        }
 
         public static bool IsAvaliableRow((int x, int y) start, short[,] map, int width) {
             while(start.x < width) {
@@ -106,7 +111,8 @@ namespace F {
             int value = 0;
             while(start.x < width) {
                 if (!IsAvaliable(map[start.x, start.y])) {
-                    return int.MinValue;
+                    start.x++;
+                    continue;
                 }
                 value += map[start.x++, start.y];
             }
@@ -117,7 +123,8 @@ namespace F {
             int value = 0;
             while(start.x > 0) {
                 if (!IsAvaliable(map[start.x, start.y])) {
-                    return int.MinValue;
+                    start.x--;
+                    continue;
                 }
                 value += map[start.x--, start.y];
             }

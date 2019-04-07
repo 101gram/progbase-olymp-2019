@@ -10,7 +10,7 @@ namespace D {
             int result = 0;
             for (int begin = 0; begin < heights.Length; begin++) {
                 for (int end = begin; end < heights.Length; end++) {
-                    if (IsValidHeigth(ref heights, begin, end, height)) {
+                    if (IsValidHeigth(heights, begin, end, height)) {
                         result++;
                     }
                 }
@@ -18,7 +18,7 @@ namespace D {
             return result;
         }
 
-        static bool IsValidHeigth(ref int[] array, int begin, int end, int val) {
+        static bool IsValidHeigth(int[] array, int begin, int end, int val) {
             return array[begin + ((end - begin + 2) / 2 - 1)] >= val;
         }
     }

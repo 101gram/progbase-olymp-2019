@@ -11,70 +11,75 @@ namespace F {
         }
 
         static int CalculatePlaces(short[,] map, int width) {
+            int heigth = map.Length / width; 
             int direct = BuildDirectRoute(map, width);
             int reverse = BuildReverseRoute(map, width);
             if (direct == int.MinValue && reverse == int.MinValue) {
                 throw new ArgumentException("Couldn't build route, map is invalid");
             } else if (direct == int.MinValue || reverse == int.MinValue) {
                 return direct == int.MinValue ? reverse : direct;
+            } else if (direct == 0 && reverse == 0) {
+                return -1;
             } else {
-                return direct + reverse;
+                int firstValue = map[0, 0];
+                int lastValue = map[width - 1, heigth -1];
+                return direct + reverse - firstValue - lastValue;
             }
         }
 
         static int BuildDirectRoute(short[,] map, int width) {
+            return CountValuesTopMap(map, width).Value;
+        }
+
+        static int? CountValuesTopMap(short[,] map, int width, int x = 0, int y = 0) {
             int heigth = map.Length / width; 
-            int x = 0, y = 0;
-            int value = 0;
-            int currentRowValue = CalculateRowValue((x, y), map, width);
-            while (x != width - 1 || y != heigth - 1) {
-                int currentValue = IsTarget(map[x, y]) ? 1 : 0;
-                currentRowValue -= currentValue;
-                value += currentValue;
-                if (y < GetYOfDiagonalMatrix(x, width, heigth) || x == width - 1) {
-                    if (IsAvaliableRow((x, y + 1), map, width)) {
-                        int newRow = CalculateRowValue((x, y + 1), map, width);
-                        if (newRow >= currentRowValue) {
-                            currentRowValue = newRow;
-                            y++;
-                            continue;
-                        }
-                    } else if (x == width - 1) {
-                        return int.MinValue;
-                    }
-                }
-                if (x + 1 < width && IsAvaliableCell((x + 1, y), map)) {
-                   x++;
-                } 
+            if (x == width - 1 && y == heigth - 1) {
+                return map[x, y];
             }
-            return value;
+            int? rightRoute = 0;
+            int? downRoute = 0;
+            if (y <= GetYOfDiagonalMatrix(x, width, heigth) && y + 1 <= heigth - 1) {
+                downRoute = CountValuesTopMap(map, width, x, y + 1);
+            }
+            if (x + 1 <= width - 1) {
+                rightRoute = CountValuesTopMap(map, width, x + 1, y);
+            }
+            if (IsAvaliableCell((x, y), map)) {
+                if (rightRoute == null && downRoute == null) {
+                    return int.MinValue;
+                }
+                return map[x, y] + Math.Max(rightRoute ?? int.MinValue, downRoute ?? int.MinValue);
+            } else {
+                return null;
+            }
         }
 
         static int BuildReverseRoute(short[,] map, int width) {
             int heigth = map.Length / width; 
-            int x = width - 1, y = heigth - 1;
-            int value = 0;
-            int currentRowValue = CalculateRowValueInverse((x, y), map, width);
-            while (x != 0 || y != 0) {
-                int currentValue = IsTarget(map[x, y]) ? 1 : 0;
-                currentRowValue -= currentValue;
-                value += currentValue;
-                if (y > GetYOfDiagonalMatrix(x, width, heigth) || x == 0) {
-                    if (IsAvaliableRowInverse((x, y - 1), map, width)) {
-                        int newRow = CalculateRowValueInverse((x, y - 1), map, width);
-                        if (newRow >= currentRowValue) {
-                            currentRowValue = newRow;
-                            y--;
-                        }
-                    } else if (x == 0) {
-                        return int.MinValue;
-                    }
-                }
-                if (x - 1 >= 0 && IsAvaliableCell((x - 1, y), map)) {
-                   x--;
-                } 
+            return CountValuesDownMap(map, width, width - 1, heigth - 1).Value;
+        }
+
+        static int? CountValuesDownMap(short[,] map, int width, int x, int y) {
+            int heigth = map.Length / width; 
+            if (x == 0 && y == 0) {
+                return map[x, y];
             }
-            return value;
+            int? leftRoute = 0;
+            int? topRoute = 0;
+            if (y > GetYOfDiagonalMatrix(x, width, heigth) && y - 1 >= 0) {
+                topRoute = CountValuesDownMap(map, width, x, y - 1);
+            }
+            if (x - 1 >= 0) {
+                leftRoute = CountValuesDownMap(map, width, x - 1, y);
+            }
+            if (IsAvaliableCell((x, y), map)) {
+                if (leftRoute == null && topRoute == null) {
+                    return int.MinValue;
+                }
+                return map[x, y] + Math.Max(leftRoute ?? int.MinValue, topRoute ?? int.MinValue);
+            } else {
+                return null;
+            }
         }
 
         public static int GetYOfDiagonalMatrix(int x, int width, int heigth) {
@@ -87,48 +92,6 @@ namespace F {
 
         public static bool IsAvaliableCell((int x, int y) cell, short[,] map) {
             return IsAvaliable(map[cell.x, cell.y]);
-        }
-
-        public static bool IsAvaliableRow((int x, int y) start, short[,] map, int width) {
-            while(start.x < width) {
-                if (!IsAvaliable(map[start.x++, start.y])) {
-                    return false;
-                }
-            }
-            return true;
-        }
-
-        public static bool IsAvaliableRowInverse((int x, int y) start, short[,] map, int width) {
-            while(start.x > 0) {
-                if (!IsAvaliable(map[start.x--, start.y])) {
-                    return false;
-                }
-            }
-            return true;
-        }
-
-        public static int CalculateRowValue((int x, int y) start, short[,] map, int width) {
-            int value = 0;
-            while(start.x < width) {
-                if (!IsAvaliable(map[start.x, start.y])) {
-                    start.x++;
-                    continue;
-                }
-                value += map[start.x++, start.y];
-            }
-            return value;
-        }
-
-        public static int CalculateRowValueInverse((int x, int y) start, short[,] map, int width) {
-            int value = 0;
-            while(start.x > 0) {
-                if (!IsAvaliable(map[start.x, start.y])) {
-                    start.x--;
-                    continue;
-                }
-                value += map[start.x--, start.y];
-            }
-            return value;
         }
 
         static short[,] ReadMap(int width, int heigth) {

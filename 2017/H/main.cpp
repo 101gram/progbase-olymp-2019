@@ -11,9 +11,9 @@ auto f(int128 n) {
     int128 c3bias = 1; // bias between the difference of successive cubic numbers 
 	while (c3 <= n - 2) {
 		const int128 b = std::floor(std::sqrt(static_cast<double>(n - 1 - c3)));
-        total -= b * (1 + 6.0 * (c3 - n) + b * (2.0 * b + 3.0)) / 6.0;
+        total -= b * (1 + 6 * (c3 - n) + b * (2 * b + 3)) / 6.0;
 
-        c3 += c3bias += 6 * c; // increse the bias and set the next value of c ^ 3
+        c3 += c3bias += 6 * c; // increase the bias and set the next value of c ^ 3
         ++c;
     }
 	return total;

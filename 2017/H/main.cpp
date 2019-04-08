@@ -20,6 +20,21 @@ auto f(int128 n) {
 	return total;
 }
 
+/*
+function f(n) {
+	let total = 0;
+	const maxC = Math.cbrt(n - 2);
+	for (let c = 1; c <= maxC; ++c) {
+		const maxB = Math.sqrt(n - 1 - c ** 3);
+		for (let b = 1; b <= maxB; ++b){
+            total += n - b ** 2 - c ** 3;
+        }
+    }
+	return total;
+}
+
+*/
+
 int main() {
     const auto t1 = std::chrono::high_resolution_clock::now();
     std::cout << "Result: " << static_cast<double>(f(std::pow(10, 18))) << '\n';
